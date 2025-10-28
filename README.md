@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 # Sausage Store
 
 ![image](https://user-images.githubusercontent.com/9394918/121517767-69db8a80-c9f8-11eb-835a-e98ca07fd995.png)
@@ -40,4 +41,3 @@ Then open your browser and go to [http://localhost](http://localhost)
 =======
 # sausage-store
 >>>>>>> d00cda69d76b100bbaa01910f7ba1668413e24cd
-
