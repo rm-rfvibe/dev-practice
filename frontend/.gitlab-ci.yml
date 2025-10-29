@@ -1,0 +1,31 @@
+stages:
+  - build
+  - notify
+
+build-frontend-code-job:
+  stage: build
+  only:
+    changes:
+      - frontend/**/*
+  script:
+    - cd frontend
+    - npm install
+    - npm run build
+  artifacts:
+    paths:
+      - frontend/dist/frontend
+    expire_in: 1 week
+
+telegram-notification-frontend:
+  stage: notify
+  only:
+    changes:
+      - frontend/**/*
+    variables:
+      - $CI_COMMIT_MESSAGE =~ /send notification/
+  script:
+    - |
+      ARTIFACT_URL="$CI_PROJECT_URL/-/jobs/artifacts/$CI_COMMIT_SHA/download?job=build-frontend-code-job"
+      echo "Telegram notification would be sent here: $ARTIFACT_URL"
+  needs:
+    - build-frontend-code-job
