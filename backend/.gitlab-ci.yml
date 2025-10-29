@@ -12,9 +12,9 @@ build-backend-code-job:
   stage: build
   script:
     - cd backend
-    - mvn -B dependency:go-offline || true
+    - mvn -B dependency:resolve-plugins dependency:resolve
     - mvn -B clean compile
-    - mvn -B package -o
+    - mvn -B package
   artifacts:
     paths:
       - backend/target/*.jar
