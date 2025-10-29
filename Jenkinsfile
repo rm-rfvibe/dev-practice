@@ -5,14 +5,13 @@ pipeline {
         stage('Setup tools') {
             steps {
                 sh '''
-                    # Устанавливаем Maven
-                    wget https://archive.apache.org/dist/maven/maven-3/3.8.1/binaries/apache-maven-3.8.1-bin.tar.gz
+                    # Устанавливаем Maven используя curl
+                    curl -L -o apache-maven-3.8.1-bin.tar.gz https://archive.apache.org/dist/maven/maven-3/3.8.1/binaries/apache-maven-3.8.1-bin.tar.gz
                     tar -xzf apache-maven-3.8.1-bin.tar.gz
-                    export PATH=$PWD/apache-maven-3.8.1/bin:$PATH
                     
-                    # Устанавливаем NodeJS
+                    # Устанавливаем NodeJS (упрощенная версия)
                     curl -fsSL https://deb.nodesource.com/setup_16.x | bash -
-                    apt-get install -y nodejs
+                    apt-get update && apt-get install -y nodejs
                 '''
             }
         }
@@ -21,8 +20,8 @@ pipeline {
             steps {
                 dir("backend") {
                     sh '''
-                        export PATH=$WORKSPACE/apache-maven-3.8.1/bin:$PATH
-                        mvn package
+                        # Используем установленный Maven
+                        ../apache-maven-3.8.1/bin/mvn package
                     '''
                 }
             }
