@@ -5,14 +5,16 @@ stages:
 
 cache:
   paths:
-    - ${CI_PROJECT_DIR}/.m2/repository
+    - .m2/repository/
+    key: maven-repo
 
 build-backend-code-job:
   stage: build
   script:
     - cd backend
-    - mvn -B dependency:go-offline
-    - mvn -B clean package
+    - mvn -B dependency:go-offline || true
+    - mvn -B clean compile
+    - mvn -B package -o
   artifacts:
     paths:
       - backend/target/*.jar
