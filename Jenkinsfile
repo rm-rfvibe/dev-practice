@@ -1,26 +1,11 @@
 pipeline {
     agent any
 
-    triggers {
-        pollSCM('H/5 * * * *')
-    }
-
-    tools {
-        maven 'maven-3.8.1'
-        jdk 'jdk17' 
-        nodejs 'node-16'
-    }
-
     stages {
         stage('Build & Test backend') {
             steps {
                 dir("backend") {
                     sh 'mvn package'
-                }
-            }
-            post {
-                success {
-                    junit 'backend/target/surefire-reports/**/*.xml'
                 }
             }
         }
@@ -44,7 +29,7 @@ pipeline {
                     sh '''
                         curl -X POST \
                         -H 'Content-Type: application/json' \
-                        --data '{"chat_id": "-1002960423949", "text": "Иван Иванов собрал приложение."}' \
+                        --data '{"chat_id": "-1002960423949", "text": "Котик Котов собрал приложение."}' \
                         https://api.telegram.org/bot5933756043:AAG6cdxMAdOtN3-NQ9sfS4CdpGuS8ilASwA/sendMessage
                     '''
                 }
