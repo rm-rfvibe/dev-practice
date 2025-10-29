@@ -30,8 +30,9 @@ sonarqube-frontend-sast:
 
 telegram-notification-frontend:
   stage: notify
-  variables:
-    - $CI_COMMIT_MESSAGE =~ /send notification/
+  only:
+    variables:
+      - $CI_COMMIT_MESSAGE =~ /send notification/
   script:
     - |
       ARTIFACT_URL="$CI_PROJECT_URL/-/jobs/artifacts/$CI_COMMIT_SHA/download?job=build-frontend-code-job"
