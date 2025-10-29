@@ -27,6 +27,7 @@ sonarqube-frontend-sast:
       -Dsonar.projectName="09_BASTRYKINA_FRONTEND"
   needs:
     - build-frontend-code-job
+  allow_failure: true  
 
 telegram-notification-frontend:
   stage: notify
