@@ -6,7 +6,7 @@ stages:
 cache:
   paths:
     - .m2/repository/
-    key: maven-repo
+  key: maven-repo
 
 build-backend-code-job:
   stage: build
