@@ -1,0 +1,35 @@
+stages:
+  - build
+  - notify
+
+cache:
+  paths:
+    - .m2/repository/
+
+build-backend-code-job:
+  stage: build
+  only:
+    changes:
+      - backend/**/*
+  script:
+    - cd backend
+    - mvn -B dependency:go-offline
+    - mvn -B clean package
+  artifacts:
+    paths:
+      - backend/target/*.jar
+    expire_in: 1 week
+
+telegram-notification-backend:
+  stage: notify
+  only:
+    changes:
+      - backend/**/*
+    variables:
+      - $CI_COMMIT_MESSAGE =~ /send notification/
+  script:
+    - |
+      ARTIFACT_URL="$CI_PROJECT_URL/-/jobs/artifacts/$CI_COMMIT_SHA/download?job=build-backend-code-job"
+      echo "Telegram notification: Backend built successfully! Artifacts: $ARTIFACT_URL"
+  needs:
+    - build-backend-code-job
