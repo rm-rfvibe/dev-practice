@@ -1,12 +1,10 @@
 stages:
   - build
+  - test
   - notify
 
 build-frontend-code-job:
   stage: build
-  only:
-    changes:
-      - frontend/**/*
   script:
     - cd frontend
     - npm install
@@ -16,16 +14,27 @@ build-frontend-code-job:
       - frontend/dist/frontend
     expire_in: 1 week
 
+sonarqube-frontend-sast:
+  stage: test
+  image: sonarsource/sonar-scanner-cli
+  script:
+    - cd frontend
+    - sonar-scanner 
+      -Dsonar.projectKey=$SONAR_PROJECT_KEY_FRONT 
+      -Dsonar.sources=. 
+      -Dsonar.host.url=$SONARQUBE_URL 
+      -Dsonar.login=$SONAR_LOGIN_FRONT 
+      -Dsonar.projectName="09_BASTRYKINA_FRONTEND"
+  needs:
+    - build-frontend-code-job
+
 telegram-notification-frontend:
   stage: notify
-  only:
-    changes:
-      - frontend/**/*
-    variables:
-      - $CI_COMMIT_MESSAGE =~ /send notification/
+  variables:
+    - $CI_COMMIT_MESSAGE =~ /send notification/
   script:
     - |
       ARTIFACT_URL="$CI_PROJECT_URL/-/jobs/artifacts/$CI_COMMIT_SHA/download?job=build-frontend-code-job"
-      echo "Telegram notification would be sent here: $ARTIFACT_URL"
+      echo "Telegram notification: Frontend built successfully! Artifacts: $ARTIFACT_URL"
   needs:
     - build-frontend-code-job

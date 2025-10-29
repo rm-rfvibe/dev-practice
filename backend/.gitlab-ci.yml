@@ -1,16 +1,14 @@
 stages:
   - build
+  - test
   - notify
 
 cache:
   paths:
-    - .m2/repository/
+    - ${CI_PROJECT_DIR}/.m2/repository
 
 build-backend-code-job:
   stage: build
-  only:
-    changes:
-      - backend/**/*
   script:
     - cd backend
     - mvn -B dependency:go-offline
@@ -20,13 +18,33 @@ build-backend-code-job:
       - backend/target/*.jar
     expire_in: 1 week
 
+semgrep-sast:
+  stage: test
+  variables:
+    COMPILE: "false"
+    SAST_JAVA_VERSION: "16"
+    MAVEN_REPO_PATH: "${CI_PROJECT_DIR}/.m2/repository"
+  needs:
+    - build-backend-code-job
+
+sonarqube-backend-sast:
+  stage: test
+  image: maven:3.8-openjdk-16
+  script:
+    - cd backend
+    - mvn verify sonar:sonar 
+      -Dsonar.qualitygate.wait=true 
+      -Dsonar.projectKey=$SONAR_PROJECT_KEY_BACK 
+      -Dsonar.host.url=$SONARQUBE_URL 
+      -Dsonar.login=$SONAR_LOGIN_BACK 
+      -Dsonar.projectName="09_BASTRYKINA_BACKEND"
+  needs:
+    - build-backend-code-job
+
 telegram-notification-backend:
   stage: notify
-  only:
-    changes:
-      - backend/**/*
-    variables:
-      - $CI_COMMIT_MESSAGE =~ /send notification/
+  variables:
+    - $CI_COMMIT_MESSAGE =~ /send notification/
   script:
     - |
       ARTIFACT_URL="$CI_PROJECT_URL/-/jobs/artifacts/$CI_COMMIT_SHA/download?job=build-backend-code-job"
