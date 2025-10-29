@@ -2,10 +2,33 @@ pipeline {
     agent any
 
     stages {
+        stage('Setup tools') {
+            steps {
+                sh '''
+                    # Устанавливаем Maven
+                    wget https://archive.apache.org/dist/maven/maven-3/3.8.1/binaries/apache-maven-3.8.1-bin.tar.gz
+                    tar -xzf apache-maven-3.8.1-bin.tar.gz
+                    export PATH=$PWD/apache-maven-3.8.1/bin:$PATH
+                    
+                    # Устанавливаем NodeJS
+                    curl -fsSL https://deb.nodesource.com/setup_16.x | bash -
+                    apt-get install -y nodejs
+                '''
+            }
+        }
+
         stage('Build & Test backend') {
             steps {
                 dir("backend") {
-                    sh 'mvn package'
+                    sh '''
+                        export PATH=$WORKSPACE/apache-maven-3.8.1/bin:$PATH
+                        mvn package
+                    '''
+                }
+            }
+            post {
+                success {
+                    junit 'backend/target/surefire-reports/**/*.xml'
                 }
             }
         }
