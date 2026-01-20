@@ -1,0 +1,92 @@
+# Global values
+environment: production
+
+# Docker registry credentials for pulling images (set via --set or secrets)
+imageCredentials:
+  registry: "your-registry.example.com"   # e.g. ghcr.io
+  username: ""
+  password: ""
+  email: ""
+
+# Backend configuration
+backend:
+  image: "your-registry.example.com/username/sausage-backend"   # override with --set
+  tag: latest
+  replicas: 1
+  port: 8080
+  
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "100m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+  
+  # External resources
+  vault:
+    addr: "http://vault:8200"
+  
+  database:
+    host: "postgresql"
+    port: 5432
+    name: "sausagestore"
+    username: "postgres"
+    # Use --set backend.database.password="..." or external secret management in production
+    password: "postgres"
+
+# Backend Report configuration
+backendReport:
+  image: "your-registry.example.com/username/sausage-backend-report"   # override with --set
+  tag: latest
+  replicas: 1
+  port: 8081
+  
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "50m"
+    limits:
+      memory: "256Mi"
+      cpu: "200m"
+  
+  vault:
+    addr: "http://vault:8200"
+
+# Alias for Helm subchart naming
+backend-report:
+  image: "your-registry.example.com/username/sausage-backend-report"   # override with --set
+  tag: latest
+  replicas: 1
+  port: 8081
+  
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "50m"
+    limits:
+      memory: "256Mi"
+      cpu: "200m"
+  
+  vault:
+    addr: "http://vault:8200"
+
+# Frontend configuration
+frontend:
+  image: "your-registry.example.com/username/sausage-frontend"   # override with --set
+  tag: latest
+  replicas: 2
+  port: 80
+  
+  fqdn: "app.example.com"   # your ingress domain, override with --set
+  
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "50m"
+    limits:
+      memory: "256Mi"
+      cpu: "200m"
+  
+  # Backend URL for API calls
+  backendUrl: "http://sausage-backend:8080"

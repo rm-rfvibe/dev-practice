@@ -26,3 +26,11 @@ replay_pid*
 
 /.idea/
 /.vscode/
+
+# Local env and overrides (do not commit secrets)
+.env
+.env.*
+!.env.example
+*values*.local.yaml
+*secrets*.local.yaml
+temp_file.txt
